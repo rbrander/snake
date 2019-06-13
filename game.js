@@ -36,20 +36,13 @@ function mousemove(event) {
 
 function drawBackground() {
   // draw 3x3 copies of the background, offset by the position
-  const xOffset = x % background.width;
-  const yOffset = y % background.height;
-  // draw the background where our position is inside
-  const startX = halfWidth - xOffset;
-  const startY = halfHeight - yOffset;
-  ctx.drawImage(background, startX, startY); // center
-  ctx.drawImage(background, startX + background.width, startY); // right
-  ctx.drawImage(background, startX - background.width, startY); // left
-  ctx.drawImage(background, startX, startY + background.height); // bottom
-  ctx.drawImage(background, startX, startY - background.height); // top
-  ctx.drawImage(background, startX + background.width, startY - background.height); // upper right
-  ctx.drawImage(background, startX + background.width, startY + background.height); // lower right
-  ctx.drawImage(background, startX - background.width, startY - background.height); // upper left
-  ctx.drawImage(background, startX - background.width, startY + background.height); // lower left
+  const xOffset = ((x % background.width) + background.width) % background.width;
+  const yOffset = ((y % background.height) + background.height) % background.height;
+  for (let x = -xOffset; x < canvas.width; x += background.width) {
+    for (let y = -yOffset; y < canvas.height; y += background.height) {
+      ctx.drawImage(background, x, y);
+    }
+  }
 }
 
 function draw(tick, prevTick) {
@@ -103,7 +96,7 @@ function update(tick, prevTick) {
     x = ~~(x + Math.cos(angle) * accel * timeDiff);
     y = ~~(y + Math.sin(angle) * accel * timeDiff);
     snake.push({x, y});
-    if (snake.length > snakeLength) {
+    while (snake.length > snakeLength) {
       snake.shift();
     }
   }
